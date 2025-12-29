@@ -1,0 +1,98 @@
+"""
+Advanced Spam Classifier using Naive Bayes
+------------------------------------------
+- Handles large text input
+- Uses TF-IDF with n-grams
+- High accuracy for spam detection
+- Single-file, GitHub-ready
+"""
+
+import re
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.naive_bayes import MultinomialNB
+
+# -----------------------------
+# Text Preprocessing
+# -----------------------------
+def clean_text(text):
+    text = text.lower()
+    text = re.sub(r"http\S+|www\S+", " ", text)   # remove URLs
+    text = re.sub(r"[^a-z\s]", " ", text)         # remove symbols
+    text = re.sub(r"\s+", " ", text).strip()
+    return text
+
+# -----------------------------
+# Training Data (expandable)
+# -----------------------------
+texts = [
+    "win money now click the link",
+    "free prize claim immediately",
+    "congratulations you have won a lottery",
+    "limited offer exclusive deal act fast",
+    "urgent response required claim reward",
+
+    "team meeting scheduled tomorrow",
+    "project discussion and documentation",
+    "please review the attached report",
+    "deadline extended for assignment",
+    "let us catch up for discussion"
+]
+
+labels = [
+    1, 1, 1, 1, 1,   # SPAM
+    0, 0, 0, 0, 0    # NOT SPAM
+]
+
+texts = [clean_text(t) for t in texts]
+
+# -----------------------------
+# Vectorizer (strong settings)
+# -----------------------------
+vectorizer = TfidfVectorizer(
+    stop_words="english",
+    ngram_range=(1, 2),
+    max_features=20000,
+    sublinear_tf=True
+)
+
+X = vectorizer.fit_transform(texts)
+
+# -----------------------------
+# Naive Bayes Model
+# -----------------------------
+model = MultinomialNB(alpha=0.5)  # smoothing improves performance
+model.fit(X, labels)
+
+# -----------------------------
+# Prediction
+# -----------------------------
+def classify_message(message):
+    message = clean_text(message)
+    vector = vectorizer.transform([message])
+    prediction = model.predict(vector)[0]
+    prob = model.predict_proba(vector)[0][1]
+
+    if prediction == 1:
+        return f"SPAM ✅ (confidence: {prob:.2f})"
+    else:
+        return f"NOT SPAM ❌ (confidence: {1 - prob:.2f})"
+
+# -----------------------------
+# User Input (Large Text)
+# -----------------------------
+if __name__ == "__main__":
+    print("Enter message (press Enter twice to finish):\n")
+
+    lines = []
+    while True:
+        try:
+            line = input()
+            if line == "":
+                break
+            lines.append(line)
+        except EOFError:
+            break
+
+    message = " ".join(lines)
+
+    print("\nResult:", classify_message(message))
