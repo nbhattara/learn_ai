@@ -1,0 +1,6 @@
+order_id,customer_name,order_date,product,quantity,price,country,status
+1001,"  John Doe ",15-01-2025,iPhone 14,2,$799,usa,complete
+1002,Mary Jones,2025/01/16,macbook pro,1,1299.00,US,Shipped
+1001,"  John Doe ",2025-01-15,iphone 14,2,799,United States,Completed
+1003,Anna,,Airpods,,"249.99","United Kingdom",cancelled
+1004,Carlos NULL,17/01/2025,Samsung S23,3,899,,Processing
